@@ -1,21 +1,21 @@
+# Use official Python image
 FROM python:3.10-slim-buster
 
+# Set working directory
 WORKDIR /app
 
-COPY . /app
+# Copy only requirements first for caching
+COPY requirements.txt .
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    gcc \
-    libffi-dev \
-    libssl-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-# Upgrade pip
+# Upgrade pip and install dependencies
 RUN pip install --upgrade pip
-
-# Install Python packages
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "app.py"]
+# Copy rest of the application
+COPY . .
+
+# Expose port for Flask
+EXPOSE 5000
+
+# Run the app
+CMD ["python", "app.py"]
